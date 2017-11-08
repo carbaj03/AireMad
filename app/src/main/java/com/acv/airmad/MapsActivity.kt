@@ -2,7 +2,6 @@ package com.acv.airmad
 
 import android.os.Bundle
 import android.support.v7.app.AppCompatActivity
-import android.util.Log
 import android.view.WindowManager
 import com.google.android.gms.maps.CameraUpdateFactory
 import com.google.android.gms.maps.GoogleMap
@@ -10,6 +9,11 @@ import com.google.android.gms.maps.OnMapReadyCallback
 import com.google.android.gms.maps.SupportMapFragment
 import com.google.android.gms.maps.model.LatLng
 import com.google.android.gms.maps.model.MarkerOptions
+import kategory.Either
+import kategory.effects.IO
+import kategory.effects.asyncContext
+import kategory.effects.ev
+import kategory.right
 import kotlinx.android.synthetic.main.activity_maps.*
 import kotlinx.android.synthetic.main.view_map.*
 import kotlinx.coroutines.experimental.CommonPool
@@ -38,9 +42,6 @@ class MapsActivity : AppCompatActivity(), OnMapReadyCallback {
         search.clearFocus()
 
 
-
-
-
     }
 
     suspend fun sus() = run(CommonPool) { retrofit(client()).allStations().execute() }
@@ -50,13 +51,16 @@ class MapsActivity : AppCompatActivity(), OnMapReadyCallback {
         moveCamera(CameraUpdateFactory.newLatLng(madrid))
         animateCamera(CameraUpdateFactory.zoomTo(15.0f))
 
-
-        launch(UI) {
-            // launch coroutine in UI context
-            val size = sus().body()!!.forEach { addMarker(MarkerOptions().position(LatLng(it.latitude.toDouble(),it.longitude.toDouble()))) }
-//            delay(2000)
-//            Toast.makeText(applicationContext, "safsdf", Toast.LENGTH_LONG).show()
-        }
+        IO.asyncContext()
+                .runAsync {
+                    retrofit(client()).allStations().execute().body()!!.forEach { addMarker(MarkerOptions().position(LatLng(it.latitude.toDouble(), it.longitude.toDouble()))) }
+                }.ev().attempt().unsafeRunSync()
+//        launch(UI) {
+//            // launch coroutine in UI context
+//            val size = retrofit(client()).allStations().execute().body()!!.forEach { addMarker(MarkerOptions().position(LatLng(it.latitude.toDouble(), it.longitude.toDouble()))) }
+////            delay(2000)
+////            Toast.makeText(applicationContext, "safsdf", Toast.LENGTH_LONG).show()
+//        }
         map = this
     }
 }

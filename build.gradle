@@ -1,29 +1,33 @@
 // Top-level build file where you can add configuration options common to all sub-projects/modules.
-
 buildscript {
     ext.kotlin_version = '1.1.51'
+    ext.kategory_version = '0.3.10'
+    ext.supportLibrary = '27.0.0'
+    ext.coroutinesVersion = '0.16'
+
     repositories {
-        google()
+        maven { url "http://dl.bintray.com/kategory/maven" }
         jcenter()
-        maven { url 'https://kotlin.bintray.com/kotlinx' }
+        google()
     }
+
     dependencies {
         classpath 'com.android.tools.build:gradle:3.0.0'
         classpath "org.jetbrains.kotlin:kotlin-gradle-plugin:$kotlin_version"
-
-        // NOTE: Do not place your application dependencies here; they belong
-        // in the individual module build.gradle files
+        classpath "org.jetbrains.kotlin:kotlin-android-extensions:$kotlin_version"
     }
 }
 
 allprojects {
     repositories {
-        google()
         jcenter()
+        mavenCentral()
+        maven { url "http://dl.bintray.com/kategory/maven" }
+        maven { url 'https://maven.google.com' }
         maven { url 'https://kotlin.bintray.com/kotlinx' }
+        maven { url "http://dl.bintray.com/kotlin/kotlin-dev" }
     }
 }
-
 task clean(type: Delete) {
     delete rootProject.buildDir
 }
