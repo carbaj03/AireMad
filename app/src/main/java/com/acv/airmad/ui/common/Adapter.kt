@@ -1,11 +1,14 @@
-package com.acv.airmad
+package com.acv.airmad.ui.common
 
 import android.support.v7.widget.RecyclerView
 import android.view.View
 import android.view.ViewGroup
+import com.acv.airmad.inflate
+import com.acv.airmad.ui.search.ListViewHolder
+import com.acv.airmad.ui.search.Station
 
 
-typealias SkillAdapter = Adapter<ListViewHolder, Skill>
+typealias StationAdapter = Adapter<ListViewHolder, Station>
 
 abstract class ViewHolder<in M>(view: View) : RecyclerView.ViewHolder(view) {
     abstract fun bind(model: M)

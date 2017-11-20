@@ -1,4 +1,4 @@
-package com.acv.airmad
+package com.acv.airmad.ui.common
 
 
 import android.os.Bundle

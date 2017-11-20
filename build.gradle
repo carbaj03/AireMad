@@ -2,8 +2,9 @@
 buildscript {
     ext.kotlin_version = '1.1.51'
     ext.kategory_version = '0.3.10'
-    ext.supportLibrary = '27.0.0'
+    ext.supportLibrary = '27.0.1'
     ext.coroutinesVersion = '0.16'
+    ext.arch_version = '1.0.0'
 
     repositories {
         maven { url "http://dl.bintray.com/kategory/maven" }

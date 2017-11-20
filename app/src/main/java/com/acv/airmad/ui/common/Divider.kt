@@ -1,4 +1,4 @@
-package com.acv.airmad
+package com.acv.airmad.ui.common
 
 import android.content.Context
 import android.content.res.Resources
@@ -12,6 +12,7 @@ import android.support.annotation.DimenRes
 import android.support.v7.widget.RecyclerView
 import android.util.TypedValue
 import android.view.View
+import com.acv.airmad.R
 
 
 data class Divider(

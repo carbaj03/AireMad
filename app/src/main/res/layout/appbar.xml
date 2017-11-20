@@ -3,6 +3,7 @@
     android:id="@+id/appbarMap"
     android:layout_width="match_parent"
     android:layout_margin="8dp"
+    android:elevation="10dp"
     android:layout_height="?attr/actionBarSize"
     android:theme="@style/ThemeOverlay.AppCompat.Dark.ActionBar"
     xmlns:android="http://schemas.android.com/apk/res/android"
@@ -12,16 +13,16 @@
         android:id="@+id/toolbarMap"
         android:layout_width="match_parent"
         android:layout_height="?attr/actionBarSize"
-        android:background="?attr/colorPrimary"
         android:minHeight="?attr/actionBarSize"
         android:theme="@style/ThemeOverlay.AppCompat.Dark.ActionBar"
-        app:elevation="4dp"
+        app:elevation="11dp"
         app:popupTheme="@style/ThemeOverlay.AppCompat.Light">
 
         <EditText
             android:id="@+id/searchMap"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
+            android:background="@android:color/transparent"
             android:hint="buscar"/>
 
     </android.support.v7.widget.Toolbar>
