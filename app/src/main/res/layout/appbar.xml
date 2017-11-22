@@ -1,21 +1,23 @@
 <?xml version="1.0" encoding="utf-8"?>
-<android.support.design.widget.AppBarLayout
+<android.support.design.widget.AppBarLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
     android:id="@+id/appbarMap"
     android:layout_width="match_parent"
-    android:layout_margin="8dp"
-    android:elevation="10dp"
-    android:layout_height="?attr/actionBarSize"
-    android:theme="@style/ThemeOverlay.AppCompat.Dark.ActionBar"
-    xmlns:android="http://schemas.android.com/apk/res/android"
-    xmlns:app="http://schemas.android.com/apk/res-auto">
+    android:layout_height="wrap_content"
+    android:background="@color/transparent"
+    android:padding="8dp"
+    app:elevation="10dp"
+    android:theme="@style/ThemeOverlay.AppCompat.Dark.ActionBar">
+
 
     <android.support.v7.widget.Toolbar
         android:id="@+id/toolbarMap"
         android:layout_width="match_parent"
-        android:layout_height="?attr/actionBarSize"
+        android:layout_height="wrap_content"
+        android:background="@color/primary_dark"
         android:minHeight="?attr/actionBarSize"
         android:theme="@style/ThemeOverlay.AppCompat.Dark.ActionBar"
-        app:elevation="11dp"
+        app:elevation="10dp"
         app:popupTheme="@style/ThemeOverlay.AppCompat.Light">
 
         <EditText
@@ -23,8 +25,9 @@
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:background="@android:color/transparent"
-            android:hint="buscar"/>
+            android:hint="buscar" />
 
     </android.support.v7.widget.Toolbar>
+
 
 </android.support.design.widget.AppBarLayout>

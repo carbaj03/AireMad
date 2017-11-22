@@ -10,8 +10,8 @@ class DetailFragment : BaseFragment() {
             R.layout.fragment_detail
 
     override fun onCreate() {
-        configToolbar("Android Developer")
-        tvStation
+//        configToolbar("Android Developer")
+        tvStation.setText("afdsfsf")
     }
 
 }

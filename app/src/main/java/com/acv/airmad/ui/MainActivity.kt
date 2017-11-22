@@ -4,8 +4,6 @@ import android.content.Context
 import android.content.res.Resources
 import android.os.Bundle
 import android.support.design.widget.BottomSheetBehavior
-import android.support.design.widget.BottomSheetBehavior.BottomSheetCallback
-import android.support.design.widget.BottomSheetBehavior.STATE_COLLAPSED
 import android.support.design.widget.CoordinatorLayout
 import android.support.v7.app.AppCompatActivity
 import android.util.Log
@@ -31,6 +29,7 @@ import android.graphics.Bitmap
 import android.graphics.Canvas
 import android.support.v4.content.ContextCompat
 import android.graphics.drawable.Drawable
+import android.support.design.widget.BottomSheetBehavior.*
 import com.google.android.gms.maps.model.BitmapDescriptor
 
 
@@ -52,10 +51,12 @@ class MainActivity : AppCompatActivity(), OnMapReadyCallback {
         setSupportActionBar(toolbarMap)
         actionbar()
 
-        with(appbarMap.layoutParams as CoordinatorLayout.LayoutParams) {
-            this.setMargins(getMargin(), getMargin() + getStatusBarHeight(resources), getMargin(), getMargin())
-            appbarMap.layoutParams = this
-        }
+//        with(appbarMap.layoutParams as CoordinatorLayout.LayoutParams) {
+//            setMargins(getMargin(), getMargin() + getStatusBarHeight(resources), getMargin(), getMargin())
+//            appbarMap.layoutParams = this
+//        }
+
+        appbarMap.setPadding(getMargin(), getMargin() + getStatusBarHeight(resources), getMargin(), getMargin())
 
         val mapFragment = supportFragmentManager.findFragmentById(R.id.map) as SupportMapFragment
         mapFragment.getMapAsync(this)
@@ -72,15 +73,17 @@ class MainActivity : AppCompatActivity(), OnMapReadyCallback {
             override fun onStateChanged(bottomSheet: View, newState: Int) {
                 when (newState) {
                     STATE_COLLAPSED -> {
-                        load<ListFragment>()
+                        appbarMap.setBackgroundResource(R.color.transparent)
+//                        load<ListFragment>()
 //                        appbarMap.visibility = VISIBLE
                     }
-//                    STATE_EXPANDED -> { appbarMap.visibility = GONE }
+                    STATE_EXPANDED -> { appbarMap.setBackgroundResource(R.color.primary) }
                 }
             }
 
             override fun onSlide(bottomSheet: View, slideOffset: Float) {
                 // React to dragging events
+                Log.e("offset", slideOffset.toString())
             }
         })
         container click { from.setState(BottomSheetBehavior.STATE_EXPANDED) }
@@ -129,7 +132,7 @@ class MainActivity : AppCompatActivity(), OnMapReadyCallback {
                             .position(LatLng(it.latitude.toDouble(), it.longitude.toDouble()))
                             .title("Melbourne")
                             .snippet("Population: 4,137,400")
-                            .icon(bitmapDescriptorFromVector(R.drawable.ic_restaurant_menu_black_24dp))
+                            .icon(bitmapDescriptorFromVector(R.drawable.icon))
 //                            .icon(BitmapDescriptorFactory.defaultMarker(BitmapDescriptorFactory.HUE_AZURE))
                     ).tag = it.id
                 }
