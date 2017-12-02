@@ -1,0 +1,114 @@
+<?xml version="1.0" encoding="utf-8"?>
+<android.support.design.widget.CoordinatorLayout
+    xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:orientation="vertical">
+
+  <fragment xmlns:android="http://schemas.android.com/apk/res/android"
+      android:id="@+id/map"
+      android:name="com.google.android.gms.maps.SupportMapFragment"
+      android:layout_width="match_parent"
+      android:layout_height="match_parent"
+      android:orientation="vertical"
+      android:paddingTop="?attr/actionBarSize"/>
+
+
+  <android.support.v4.view.ViewPager
+      android:id="@+id/pager"
+      android:layout_width="match_parent"
+      android:layout_height="200dp"
+      android:background="@color/backgorund"
+      app:anchorPoint="200dp"
+      app:layout_behavior="@string/coordinator_behaviors_follow_behavior"
+      app:peekHeight="100dp"/>
+  <android.support.v4.widget.NestedScrollView
+      android:id="@+id/bottom_content"
+      android:layout_width="match_parent"
+      android:layout_height="match_parent"
+      android:background="@color/accent"
+      app:anchorPoint="200dp"
+      app:draggable="false"
+      app:hideable="true"
+      app:layout_behavior="@string/coordinator_behaviors_google_map_behavior"
+      app:peekHeight="100dp"
+      app:skipAnchorPoint="false">
+
+    <LinearLayout
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:orientation="vertical">
+
+      <LinearLayout
+          android:layout_width="match_parent"
+          android:layout_height="wrap_content"
+          android:background="@color/primary"
+          android:orientation="vertical">
+
+        <TextView
+            android:layout_width="match_parent"
+            android:layout_height="?attr/actionBarSize"
+            android:gravity="center_vertical"
+            android:text="This is dummy text"
+            android:textColor="@android:color/white"
+            android:textSize="24sp"/>
+
+        <TextView
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="From http://www.blindtextgenerator.com/lorem-ipsum"
+            android:textColor="@android:color/white"/>
+
+      </LinearLayout>
+
+      <TextView
+          android:layout_width="match_parent"
+          android:layout_height="wrap_content"
+          android:padding="8dp"
+          android:text="safsd"
+          android:textColor="@android:color/white"/>
+
+    </LinearLayout>
+
+  </android.support.v4.widget.NestedScrollView>
+
+  <android.support.design.widget.AppBarLayout
+      android:layout_width="match_parent"
+      android:layout_height="?attr/actionBarSize"
+      android:theme="@style/ThemeOverlay.AppCompat.Dark.ActionBar"
+      app:anchorPoint="200dp"
+      app:elevation="0dp"
+      app:layout_behavior="@string/coordinator_behaviors_scroll_out_behavior"
+      app:peekHeight="100dp">
+
+    <android.support.v7.widget.Toolbar
+        android:id="@+id/toolbar"
+        android:layout_width="match_parent"
+        android:layout_height="?attr/actionBarSize"
+        android:theme="@style/ThemeOverlay.AppCompat.Dark.ActionBar"
+        app:popupTheme="@style/ThemeOverlay.AppCompat.Light"/>
+
+  </android.support.design.widget.AppBarLayout>
+
+  <android.support.design.widget.AppBarLayout
+      android:id="@+id/appbar"
+      android:layout_width="match_parent"
+      android:layout_height="?attr/actionBarSize"
+      android:theme="@style/ThemeOverlay.AppCompat.Dark.ActionBar"
+      app:anchorPoint="200dp"
+      app:elevation="0dp"
+      app:layout_behavior="@string/coordinator_behaviors_scroll_in_behavior"
+      app:peekHeight="100dp"
+      app:toolbarTitle="This is dummy text">
+
+    <android.support.v7.widget.Toolbar
+        android:id="@+id/merged_toolbar"
+        android:layout_width="match_parent"
+        android:layout_height="?attr/actionBarSize"
+        android:theme="@style/ThemeOverlay.AppCompat.Dark.ActionBar"
+        app:popupTheme="@style/ThemeOverlay.AppCompat.Light"/>
+
+  </android.support.design.widget.AppBarLayout>
+
+</android.support.design.widget.CoordinatorLayout>

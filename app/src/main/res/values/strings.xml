@@ -1,4 +1,10 @@
 <resources>
     <string name="app_name">AirMad</string>
     <string name="title_activity_maps">Map</string>
+
+    <string name="coordinator_behaviors_google_map_behavior">com.acv.airmad.ui.behaviour.GoogleMapLikeBehavior</string>
+    <string name="coordinator_behaviors_follow_behavior">com.acv.airmad.ui.behaviour.FollowBehavior</string>
+    <string name="coordinator_behaviors_scroll_in_behavior">com.acv.airmad.ui.behaviour.ScrollInBehavior</string>
+    <string name="coordinator_behaviors_scroll_out_behavior">com.acv.airmad.ui.behaviour.ScrollOutBehavior</string>
+    <string name="coordinator_behaviors_bottom_navigation_behavior">com.acv.airmad.ui.behaviour.BottomNavigationBehavior</string>
 </resources>

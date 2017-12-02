@@ -45,48 +45,48 @@ class MainActivity : AppCompatActivity(), OnMapReadyCallback {
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
-        setContentView(R.layout.activity_maps)
+        setContentView(R.layout.activity_behaviour)
         strictMode()
-
-        setSupportActionBar(toolbarMap)
-        actionbar()
-
-//        with(appbarMap.layoutParams as CoordinatorLayout.LayoutParams) {
-//            setMargins(getMargin(), getMargin() + getStatusBarHeight(resources), getMargin(), getMargin())
-//            appbarMap.layoutParams = this
-//        }
-
-        appbarMap.setPadding(getMargin(), getMargin() + getStatusBarHeight(resources), getMargin(), getMargin())
-
+//
+//        setSupportActionBar(toolbarMap)
+//        actionbar()
+//
+////        with(appbarMap.layoutParams as CoordinatorLayout.LayoutParams) {
+////            setMargins(getMargin(), getMargin() + getStatusBarHeight(resources), getMargin(), getMargin())
+////            appbarMap.layoutParams = this
+////        }
+//
+//        appbarMap.setPadding(getMargin(), getMargin() + getStatusBarHeight(resources), getMargin(), getMargin())
+//
         val mapFragment = supportFragmentManager.findFragmentById(R.id.map) as SupportMapFragment
         mapFragment.getMapAsync(this)
-
-
-//        load<MapFragment>(R.id.mapContainer)
-
-        searchMap focusChange { _, _ ->
-            load<ListFragment>()
-            from.setState(BottomSheetBehavior.STATE_EXPANDED)
-        }
-
-        from.setBottomSheetCallback(object : BottomSheetCallback() {
-            override fun onStateChanged(bottomSheet: View, newState: Int) {
-                when (newState) {
-                    STATE_COLLAPSED -> {
-                        appbarMap.setBackgroundResource(R.color.transparent)
-//                        load<ListFragment>()
-//                        appbarMap.visibility = VISIBLE
-                    }
-                    STATE_EXPANDED -> { appbarMap.setBackgroundResource(R.color.primary) }
-                }
-            }
-
-            override fun onSlide(bottomSheet: View, slideOffset: Float) {
-                // React to dragging events
-                Log.e("offset", slideOffset.toString())
-            }
-        })
-        container click { from.setState(BottomSheetBehavior.STATE_EXPANDED) }
+//
+//
+////        load<MapFragment>(R.id.mapContainer)
+//
+//        searchMap focusChange { _, _ ->
+//            load<ListFragment>()
+//            from.setState(BottomSheetBehavior.STATE_EXPANDED)
+//        }
+//
+//        from.setBottomSheetCallback(object : BottomSheetCallback() {
+//            override fun onStateChanged(bottomSheet: View, newState: Int) {
+//                when (newState) {
+//                    STATE_COLLAPSED -> {
+//                        appbarMap.setBackgroundResource(R.color.transparent)
+////                        load<ListFragment>()
+////                        appbarMap.visibility = VISIBLE
+//                    }
+//                    STATE_EXPANDED -> { appbarMap.setBackgroundResource(R.color.primary) }
+//                }
+//            }
+//
+//            override fun onSlide(bottomSheet: View, slideOffset: Float) {
+//                // React to dragging events
+//                Log.e("offset", slideOffset.toString())
+//            }
+//        })
+//        container click { from.setState(BottomSheetBehavior.STATE_EXPANDED) }
     }
 
     private fun getStatusBarHeight(resources: Resources): Int {
