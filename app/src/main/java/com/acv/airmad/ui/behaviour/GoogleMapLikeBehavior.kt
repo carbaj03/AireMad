@@ -14,7 +14,7 @@ import android.view.MotionEvent
 import android.view.VelocityTracker
 import android.view.View
 import android.view.ViewGroup
-import com.acv.airmad.R
+import com.acv.airmad.R.styleable.*
 import java.lang.ref.WeakReference
 import kotlin.annotation.AnnotationRetention.SOURCE
 
@@ -33,9 +33,7 @@ import kotlin.annotation.AnnotationRetention.SOURCE
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-class GoogleMapLikeBehavior<V : View>(context: Context, attrs: AttributeSet?) : Behavior<V>(
-        context, attrs) {
-
+class GoogleMapLikeBehavior<V : View>(context: Context, attrs: AttributeSet?) : Behavior<V>(context, attrs) {
     companion object {
         @IntDef(STATE_DRAGGING,
                 STATE_SETTLING,
@@ -54,8 +52,7 @@ class GoogleMapLikeBehavior<V : View>(context: Context, attrs: AttributeSet?) : 
         const val STATE_HIDDEN = 6L
 
         @SuppressWarnings("unchecked")
-        fun <V : View> from(view: V?): GoogleMapLikeBehavior<V>? {
-            if (view == null) return null
+        fun <V : View> from(view: V): GoogleMapLikeBehavior<V>? {
             val params = view.layoutParams as? LayoutParams ?: throw IllegalArgumentException(
                     "The view is not a child of CoordinatorLayout")
             return params.behavior as? GoogleMapLikeBehavior<V>
@@ -71,7 +68,7 @@ class GoogleMapLikeBehavior<V : View>(context: Context, attrs: AttributeSet?) : 
     var activePointerId = MotionEvent.INVALID_POINTER_ID
 
     lateinit var viewRef: WeakReference<View>
-    lateinit var nestedScrollingChildRef: WeakReference<View?>
+    lateinit var nestedScrollingChildRef: WeakReference<View>
     var skippedAnchorPoint = false
     var draggable = true
     var dragHelper: ViewDragHelper? = null
@@ -88,19 +85,12 @@ class GoogleMapLikeBehavior<V : View>(context: Context, attrs: AttributeSet?) : 
     var anchorTopMargin = 0
 
     init {
-        attrs?.let {
-            val typedArray = context.obtainStyledAttributes(it, R.styleable.GoogleMapLikeBehaviorParam)
-            peekHeight = typedArray.getDimensionPixelSize(
-                    R.styleable.GoogleMapLikeBehaviorParam_peekHeight, 0)
-            anchorTopMargin = typedArray.getDimensionPixelSize(
-                    R.styleable.GoogleMapLikeBehaviorParam_anchorPoint, 0)
-            draggable = typedArray.getBoolean(
-                    R.styleable.GoogleMapLikeBehaviorParam_draggable, false)
-            skippedAnchorPoint = typedArray.getBoolean(
-                    R.styleable.GoogleMapLikeBehaviorParam_skipAnchorPoint, false)
-//      hideable = typedArray?.getBoolean(
-//          R.styleable.GoogleMapLikeBehaviorParam_hideable, false)!!
-            typedArray.recycle()
+        context.obtainStyledAttributes(attrs, GoogleMapLikeBehaviorParam).apply {
+            peekHeight = getDimensionPixelSize(GoogleMapLikeBehaviorParam_peekHeight, 0)
+            anchorTopMargin = getDimensionPixelSize(GoogleMapLikeBehaviorParam_anchorPoint, 0)
+            draggable = getBoolean(GoogleMapLikeBehaviorParam_draggable, false)
+            skippedAnchorPoint = getBoolean(GoogleMapLikeBehaviorParam_skipAnchorPoint, false)
+            recycle()
         }
     }
 
@@ -120,21 +110,16 @@ class GoogleMapLikeBehavior<V : View>(context: Context, attrs: AttributeSet?) : 
             STATE_ANCHOR_POINT -> {
                 ViewCompat.offsetTopAndBottom(child, parentHeight - anchorPosition)
             }
-
             STATE_EXPANDED -> {
                 ViewCompat.offsetTopAndBottom(child, minOffset)
             }
-
             STATE_HIDDEN -> {
                 ViewCompat.offsetTopAndBottom(child, parentHeight)
             }
-
             STATE_COLLAPSED -> {
                 ViewCompat.offsetTopAndBottom(child, maxOffset)
             }
-
             else -> {
-                // do nothing
             }
         }
 
@@ -142,13 +127,12 @@ class GoogleMapLikeBehavior<V : View>(context: Context, attrs: AttributeSet?) : 
             dragHelper = ViewDragHelper.create(parent, dragCallback)
         }
         viewRef = WeakReference(child)
-        val found: View? = findScrollingChild(child)
+        val found: View = findScrollingChild(child)
         nestedScrollingChildRef = WeakReference(found)
         return true
     }
 
-    override fun onInterceptTouchEvent(parent: CoordinatorLayout, child: V,
-                                       ev: MotionEvent): Boolean {
+    override fun onInterceptTouchEvent(parent: CoordinatorLayout, child: V, ev: MotionEvent): Boolean {
         if (!draggable) {
             return false
         }
@@ -174,7 +158,6 @@ class GoogleMapLikeBehavior<V : View>(context: Context, attrs: AttributeSet?) : 
                     return false
                 }
             }
-
             MotionEvent.ACTION_DOWN -> {
                 val initialX = ev.x.toInt()
                 initialY = ev.y.toInt()
@@ -364,58 +347,18 @@ class GoogleMapLikeBehavior<V : View>(context: Context, attrs: AttributeSet?) : 
         return velocityTracker!!.getYVelocity(activePointerId)
     }
 
-    fun updateState(value: Long) {
-        if (this.state == value) {
-            return
-        }
-
-        this.state = value
-
-        val sheet = viewRef.get()
-        val parent = sheet?.parent
-        parent?.let {
-            if (it.isLayoutRequested && ViewCompat.isAttachedToWindow(sheet)) {
-                sheet.post {
-                    startSettlingAnimation(sheet, state)
-                }
-            } else {
-                startSettlingAnimation(sheet, state)
-            }
-        }
-    }
-
-    private fun findScrollingChild(view: View): View? = when (view) {
+    private fun findScrollingChild(view: View): View = when (view) {
         is NestedScrollingChild -> view
-
         is ViewGroup -> {
-            var result: View? = null
-            val group = view
-            (0 until group.childCount)
-                    .map { findScrollingChild(group.getChildAt(it)) }
-                    .forEach { v ->
-                        v?.let {
-                            result = it
-                        }
+            lateinit var result: View
+            (0 until view.childCount)
+                    .map { findScrollingChild(view.getChildAt(it)) }
+                    .forEach {
+                        result = it
                     }
             result
         }
-
-        else -> null
-    }
-
-    private fun startSettlingAnimation(child: View, @State state: Long) {
-        val top: Int
-        when (state) {
-            STATE_COLLAPSED -> top = maxOffset
-            STATE_EXPANDED -> top = minOffset
-            STATE_HIDDEN -> top = parentHeight
-            STATE_ANCHOR_POINT -> top = parentHeight - anchorPosition
-            else -> throw IllegalArgumentException("Illegal state argument: " + state)
-        }
-        setStateInternal(STATE_SETTLING)
-        if (dragHelper!!.smoothSlideViewTo(child, child.left, top)) {
-            ViewCompat.postOnAnimation(child, SettleRunnable(child, state))
-        }
+        else -> view
     }
 
     private fun setStateInternal(@State state: Long) {
@@ -449,7 +392,7 @@ class GoogleMapLikeBehavior<V : View>(context: Context, attrs: AttributeSet?) : 
         fun onBehaviorStateChanged(newState: Long)
     }
 
-    inner class SettleRunnable(val view: View, @State val state: Long) : Runnable {
+    inner class SettleRunnable(val view: View, @State private val state: Long) : Runnable {
         override fun run() {
             if (dragHelper != null && dragHelper?.continueSettling(true)!!) {
                 ViewCompat.postOnAnimation(view, this)
@@ -469,7 +412,7 @@ class GoogleMapLikeBehavior<V : View>(context: Context, attrs: AttributeSet?) : 
             }
             if (state == STATE_EXPANDED && activePointerId == pointerId) {
                 val scroll = nestedScrollingChildRef.get()
-                if (scroll != null && ViewCompat.canScrollVertically(scroll, -1)) {
+                if (scroll != null && scroll.canScrollVertically(-1)) {
                     return false
                 }
             }
@@ -487,12 +430,11 @@ class GoogleMapLikeBehavior<V : View>(context: Context, attrs: AttributeSet?) : 
         }
 
         override fun onViewReleased(releasedChild: View, xvel: Float, yvel: Float) {
-            @State var targetState: Long
-            var top: Int
+            @State val targetState: Long
+            val top: Int
             if (yvel < 0) {
                 val currentTop = releasedChild.top
-                if (Math.abs(currentTop - minOffset) < Math.abs(
-                        currentTop - parentHeight + anchorPosition)) {
+                if (Math.abs(currentTop - minOffset) < Math.abs(currentTop - parentHeight + anchorPosition)) {
                     top = minOffset
                     targetState = STATE_EXPANDED
                 } else {
@@ -504,12 +446,10 @@ class GoogleMapLikeBehavior<V : View>(context: Context, attrs: AttributeSet?) : 
                 targetState = STATE_HIDDEN
             } else if (yvel == 0.0f) {
                 val currentTop = releasedChild.top
-                if (Math.abs(currentTop - minOffset) < Math.abs(
-                        currentTop - parentHeight + anchorPosition)) {
+                if (Math.abs(currentTop - minOffset) < Math.abs(currentTop - parentHeight + anchorPosition)) {
                     top = minOffset
                     targetState = STATE_EXPANDED
-                } else if (Math.abs(currentTop - parentHeight + anchorPosition) < Math.abs(
-                        currentTop - maxOffset)) {
+                } else if (Math.abs(currentTop - parentHeight + anchorPosition) < Math.abs(currentTop - maxOffset)) {
                     if (skippedAnchorPoint) {
                         top = maxOffset
                         targetState = STATE_COLLAPSED
@@ -523,8 +463,7 @@ class GoogleMapLikeBehavior<V : View>(context: Context, attrs: AttributeSet?) : 
                 }
             } else {
                 val currentTop = releasedChild.top
-                if (Math.abs(currentTop - parentHeight + anchorPosition) < Math.abs(
-                        currentTop - maxOffset)) {
+                if (Math.abs(currentTop - parentHeight + anchorPosition) < Math.abs(currentTop - maxOffset)) {
                     if (skippedAnchorPoint) {
                         top = maxOffset
                         targetState = STATE_COLLAPSED
@@ -546,16 +485,11 @@ class GoogleMapLikeBehavior<V : View>(context: Context, attrs: AttributeSet?) : 
             }
         }
 
-        override fun clampViewPositionVertical(child: View, top: Int, dy: Int): Int {
-            val offset = if (hideable) {
-                parentHeight
-            } else {
-                maxOffset
-            }
-            return constrain(top, minOffset, offset)
-        }
+        override fun clampViewPositionVertical(child: View, top: Int, dy: Int): Int =
+                constrain(top, minOffset, getOffset())
 
-        override fun clampViewPositionHorizontal(child: View, left: Int, dx: Int): Int = child.left
+        override fun clampViewPositionHorizontal(child: View, left: Int, dx: Int): Int =
+                child.left
 
         private fun constrain(amount: Int, low: Int, high: Int): Int = when {
             amount < low -> low
@@ -563,11 +497,14 @@ class GoogleMapLikeBehavior<V : View>(context: Context, attrs: AttributeSet?) : 
             else -> amount
         }
 
-
-        override fun getViewVerticalDragRange(child: View): Int  = if (hideable) {
+        override fun getViewVerticalDragRange(child: View): Int = if (hideable) {
             parentHeight - minOffset
         } else {
             maxOffset - minOffset
         }
     }
+
+    private fun getOffset(): Int =
+            if (hideable) parentHeight else maxOffset
+
 }

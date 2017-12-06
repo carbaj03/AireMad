@@ -51,10 +51,10 @@ class MainActivity : AppCompatActivity(), OnMapReadyCallback {
 //        setSupportActionBar(toolbarMap)
 //        actionbar()
 //
-////        with(appbarMap.layoutParams as CoordinatorLayout.LayoutParams) {
-////            setMargins(getMargin(), getMargin() + getStatusBarHeight(resources), getMargin(), getMargin())
-////            appbarMap.layoutParams = this
-////        }
+//        with(appbarMap.layoutParams as CoordinatorLayout.LayoutParams) {
+//            setMargins(getMargin(), getMargin() + getStatusBarHeight(resources), getMargin(), getMargin())
+//            appbarMap.layoutParams = this
+//        }
 //
 //        appbarMap.setPadding(getMargin(), getMargin() + getStatusBarHeight(resources), getMargin(), getMargin())
 //

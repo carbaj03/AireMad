@@ -1,10 +1,14 @@
 package com.acv.airmad.ui.behaviour
 
 import android.content.Context
+import android.support.design.widget.AppBarLayout
 import android.support.design.widget.CoordinatorLayout
+import android.support.v7.widget.Toolbar
 import android.util.AttributeSet
 import android.view.View
 import com.acv.airmad.R
+import com.acv.airmad.R.attr.peekHeight
+import com.acv.airmad.R.styleable.*
 
 /**
  * Copyright (C) 2017 Tetsuya Masuda
@@ -21,37 +25,41 @@ import com.acv.airmad.R
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-class ScrollingBehavior<V : View>(context: Context,
-    attrs: AttributeSet?) : CoordinatorLayout.Behavior<V>(
-    context, attrs) {
+class ScrollingBehavior<V : View>(context: Context, attrs: AttributeSet) : CoordinatorLayout.Behavior<V>(context, attrs) {
+    var peekHeight = 300
+    var anchorPointY = 600
+    var currentChildY = 0
+    var anchorTopMargin = 0
 
-  var peekHeight = 300
-  var anchorPointY = 600
-  var currentChildY = 0
-  var anchorTopMargin = 0
+    lateinit var toolbar: Toolbar
 
-  init {
-    attrs?.let {
-      val typedArray = context.obtainStyledAttributes(it, R.styleable.GoogleMapLikeBehaviorParam)
-      peekHeight = typedArray.getDimensionPixelSize(
-          R.styleable.GoogleMapLikeBehaviorParam_peekHeight, 0)
-      anchorTopMargin = typedArray.getDimensionPixelSize(
-          R.styleable.GoogleMapLikeBehaviorParam_anchorPoint, 0)
-      typedArray.recycle()
+    init {
+        (context.obtainStyledAttributes(attrs, GoogleMapLikeBehaviorParam)).apply {
+            peekHeight = getDimensionPixelSize(GoogleMapLikeBehaviorParam_peekHeight, 0)
+            anchorTopMargin = getDimensionPixelSize(GoogleMapLikeBehaviorParam_anchorPoint, 0)
+            recycle()
+        }
     }
-  }
 
-  override fun onDependentViewChanged(parent: CoordinatorLayout, child: V,
-      dependency: View): Boolean {
-    val rate = (parent.height - dependency.y - peekHeight) / (anchorPointY - peekHeight)
-    currentChildY = ((child.height + child.paddingTop + child.paddingBottom + child.top + child.bottom) * (1f - rate)).toInt()
-    if (currentChildY <= 0) {
-      child.y = currentChildY.toFloat()
-    } else {
-      child.y = 0f
-      currentChildY = 0
+    override fun onLayoutChild(parent: CoordinatorLayout, child: V, layoutDirection: Int): Boolean {
+        parent.onLayoutChild(child, layoutDirection)
+        toolbar = (child as AppBarLayout).getToolbar()
+        return true
     }
-    return true
-  }
+
+    override fun onDependentViewChanged(parent: CoordinatorLayout, child: V, dependency: View): Boolean {
+        val rate = (parent.height - dependency.y - peekHeight) / (anchorPointY - peekHeight)
+        currentChildY = ((child.height + child.paddingTop + child.paddingBottom + child.top + child.bottom) * (1f - rate)).toInt()
+        if (currentChildY <= 0) {
+            child.y = currentChildY.toFloat()
+        } else {
+            child.y = 0f
+            currentChildY = 0
+        }
+
+        toolbar.title = "dsfadsf"
+
+        return true
+    }
 
 }
