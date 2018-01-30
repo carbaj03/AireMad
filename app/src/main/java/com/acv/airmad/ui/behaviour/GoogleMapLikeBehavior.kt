@@ -10,6 +10,7 @@ import android.support.v4.view.ViewCompat
 import android.support.v4.widget.ViewDragHelper
 import android.support.v4.widget.ViewDragHelper.Callback
 import android.util.AttributeSet
+import android.util.Log
 import android.view.MotionEvent
 import android.view.VelocityTracker
 import android.view.View
@@ -23,7 +24,7 @@ import kotlin.annotation.AnnotationRetention.SOURCE
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
- * You may obtain a copy of the License at
+ * You may obtain down copy of the License at
  *
  * http://www.apache.org/licenses/LICENSE-2.0
  *
@@ -54,7 +55,7 @@ class GoogleMapLikeBehavior<V : View>(context: Context, attrs: AttributeSet?) : 
         @SuppressWarnings("unchecked")
         fun <V : View> from(view: V): GoogleMapLikeBehavior<V>? {
             val params = view.layoutParams as? LayoutParams ?: throw IllegalArgumentException(
-                    "The view is not a child of CoordinatorLayout")
+                    "The view is not down child of CoordinatorLayout")
             return params.behavior as? GoogleMapLikeBehavior<V>
         }
     }
@@ -159,24 +160,9 @@ class GoogleMapLikeBehavior<V : View>(context: Context, attrs: AttributeSet?) : 
                 }
             }
             MotionEvent.ACTION_DOWN -> {
-                val initialX = ev.x.toInt()
-                initialY = ev.y.toInt()
-                if (state == STATE_ANCHOR_POINT) {
-                    activePointerId = ev.getPointerId(ev.actionIndex)
-                    touchingScrollingChild = true
-                } else {
-                    val scroll = nestedScrollingChildRef.get()
-                    if (scroll != null && parent.isPointInChildBounds(scroll, initialX, initialY)) {
-                        activePointerId = ev.getPointerId(ev.actionIndex)
-                        touchingScrollingChild = true
-                    }
-                }
-                ignoreEvents = activePointerId == MotionEvent.INVALID_POINTER_ID
-                        && !parent.isPointInChildBounds(child, initialX, initialY)
+                down(ev, parent, child)
             }
-
             else -> {
-                // do nothing
             }
         }
 
@@ -195,6 +181,23 @@ class GoogleMapLikeBehavior<V : View>(context: Context, attrs: AttributeSet?) : 
                 && state != STATE_DRAGGING
                 && !parent.isPointInChildBounds(scroll, ev.x.toInt(), ev.y.toInt())
                 && Math.abs(initialY - ev.y) > touchSlop
+    }
+
+    private fun down(ev: MotionEvent, parent: CoordinatorLayout, child: V) {
+        val initialX = ev.x.toInt()
+        initialY = ev.y.toInt()
+        if (state == STATE_ANCHOR_POINT) {
+            activePointerId = ev.getPointerId(ev.actionIndex)
+            touchingScrollingChild = true
+        } else {
+            val scroll = nestedScrollingChildRef.get()
+            if (scroll != null && parent.isPointInChildBounds(scroll, initialX, initialY)) {
+                activePointerId = ev.getPointerId(ev.actionIndex)
+                touchingScrollingChild = true
+            }
+        }
+        ignoreEvents = activePointerId == MotionEvent.INVALID_POINTER_ID
+                && !parent.isPointInChildBounds(child, initialX, initialY)
     }
 
     override fun onTouchEvent(parent: CoordinatorLayout, child: V, ev: MotionEvent): Boolean {
@@ -371,10 +374,6 @@ class GoogleMapLikeBehavior<V : View>(context: Context, attrs: AttributeSet?) : 
         }
     }
 
-    private fun dispatchOnSlide(offset: Int) {
-        // TODO: notify position to listener
-    }
-
     private fun reset() {
         activePointerId = ViewDragHelper.INVALID_POINTER
         velocityTracker?.let {
@@ -419,71 +418,74 @@ class GoogleMapLikeBehavior<V : View>(context: Context, attrs: AttributeSet?) : 
             return viewRef.get() != null
         }
 
-        override fun onViewPositionChanged(changedView: View, left: Int, top: Int, dx: Int, dy: Int) {
-            dispatchOnSlide(top)
-        }
-
         override fun onViewDragStateChanged(state: Int) {
             if (state == ViewDragHelper.STATE_DRAGGING) {
                 setStateInternal(STATE_DRAGGING)
             }
         }
 
-        override fun onViewReleased(releasedChild: View, xvel: Float, yvel: Float) {
-            @State val targetState: Long
-            val top: Int
-            if (yvel < 0) {
-                val currentTop = releasedChild.top
-                if (Math.abs(currentTop - minOffset) < Math.abs(currentTop - parentHeight + anchorPosition)) {
-                    top = minOffset
-                    targetState = STATE_EXPANDED
-                } else {
-                    top = parentHeight - anchorPosition
-                    targetState = STATE_ANCHOR_POINT
-                }
-            } else if (hideable && shouldHide(releasedChild, yvel)) {
-                top = parentHeight
-                targetState = STATE_HIDDEN
-            } else if (yvel == 0.0f) {
-                val currentTop = releasedChild.top
-                if (Math.abs(currentTop - minOffset) < Math.abs(currentTop - parentHeight + anchorPosition)) {
-                    top = minOffset
-                    targetState = STATE_EXPANDED
-                } else if (Math.abs(currentTop - parentHeight + anchorPosition) < Math.abs(currentTop - maxOffset)) {
-                    if (skippedAnchorPoint) {
-                        top = maxOffset
-                        targetState = STATE_COLLAPSED
-                    } else {
-                        top = parentHeight - anchorPosition
-                        targetState = STATE_ANCHOR_POINT
-                    }
-                } else {
-                    top = maxOffset
-                    targetState = STATE_COLLAPSED
-                }
-            } else {
-                val currentTop = releasedChild.top
-                if (Math.abs(currentTop - parentHeight + anchorPosition) < Math.abs(currentTop - maxOffset)) {
-                    if (skippedAnchorPoint) {
-                        top = maxOffset
-                        targetState = STATE_COLLAPSED
-                    } else {
-                        top = parentHeight - anchorPosition
-                        targetState = STATE_ANCHOR_POINT
-                    }
-                } else {
-                    top = maxOffset
-                    targetState = STATE_COLLAPSED
-                }
-            }
-            val settleCaptureViewAt = dragHelper?.settleCapturedViewAt(releasedChild.left, top)!!
-            if (settleCaptureViewAt) {
-                setStateInternal(STATE_SETTLING)
-                ViewCompat.postOnAnimation(releasedChild, SettleRunnable(releasedChild, targetState))
-            } else {
-                setStateInternal(targetState)
-            }
-        }
+//        override fun onViewReleased(releasedChild: View, xvel: Float, yvel: Float) {
+//            Log.e("0", "safsa")
+//
+//            @State val targetState: Long
+//            val top: Int
+//
+//            when {
+//                yvel < 0 -> {
+//                    Log.e("1", "safsa")
+//                    val currentTop = releasedChild.top
+//                    if (Math.abs(currentTop - minOffset) < Math.abs(currentTop - parentHeight + anchorPosition)) {
+//                        top = minOffset
+//                        targetState = STATE_EXPANDED
+//                    } else {
+//                        top = parentHeight - anchorPosition
+//                        targetState = STATE_ANCHOR_POINT
+//                    }
+//                }
+//                hideable && shouldHide(releasedChild, yvel) -> {
+//                    Log.e("2", "safsa")
+//                    top = parentHeight
+//                    targetState = STATE_HIDDEN
+//                }
+//                yvel == 0.0f -> {
+//                    Log.e("3", "safsa")
+//                    val currentTop = releasedChild.top
+//                    if (Math.abs(currentTop - minOffset) < Math.abs(currentTop - parentHeight + anchorPosition)) {
+//                        top = minOffset
+//                        targetState = STATE_EXPANDED
+//                    } else if (Math.abs(currentTop - parentHeight + anchorPosition) < Math.abs(currentTop - maxOffset)) {
+//                        if (skippedAnchorPoint) {
+//                            top = maxOffset
+//                            targetState = STATE_COLLAPSED
+//                        } else {
+//                            top = parentHeight - anchorPosition
+//                            targetState = STATE_ANCHOR_POINT
+//                        }
+//                    } else {
+//                        top = maxOffset
+//                        targetState = STATE_COLLAPSED
+//                    }
+//                }
+//                else -> {
+//                    Log.e("4", "safsa")
+//                    val currentTop = releasedChild.top
+//                    if (Math.abs(currentTop - parentHeight + anchorPosition) < Math.abs(currentTop - maxOffset)) {
+//                        if (skippedAnchorPoint) {
+//                            top = maxOffset
+//                            targetState = STATE_COLLAPSED
+//                        } else {
+//                            top = parentHeight - anchorPosition
+//                            targetState = STATE_ANCHOR_POINT
+//                        }
+//                    } else {
+//                        top = maxOffset
+//                        targetState = STATE_COLLAPSED
+//                    }
+//                }
+//            }
+//
+//            setStateInternal(releasedChild, top, targetState)
+//        }
 
         override fun clampViewPositionVertical(child: View, top: Int, dy: Int): Int =
                 constrain(top, minOffset, getOffset())
@@ -501,6 +503,16 @@ class GoogleMapLikeBehavior<V : View>(context: Context, attrs: AttributeSet?) : 
             parentHeight - minOffset
         } else {
             maxOffset - minOffset
+        }
+    }
+
+    private fun setStateInternal(releasedChild: View, top: Int, targetState: Long) {
+        val settleCaptureViewAt = dragHelper?.settleCapturedViewAt(releasedChild.left, top)!!
+        if (settleCaptureViewAt) {
+            setStateInternal(STATE_SETTLING)
+            ViewCompat.postOnAnimation(releasedChild, SettleRunnable(releasedChild, targetState))
+        } else {
+            setStateInternal(targetState)
         }
     }
 

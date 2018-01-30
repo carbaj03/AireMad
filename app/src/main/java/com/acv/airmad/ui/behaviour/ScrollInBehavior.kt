@@ -11,21 +11,6 @@ import android.view.View
 import com.acv.airmad.R.attr.peekHeight
 import com.acv.airmad.R.styleable.*
 
-/**
- * Copyright (C) 2017 Tetsuya Masuda
- *
- * Licensed under the Apache License, Version 2.0 (the "License");
- * you may not use this file except in compliance with the License.
- * You may obtain a copy of the License at
- *
- * http://www.apache.org/licenses/LICENSE-2.0
- *
- * Unless required by applicable law or agreed to in writing, software
- * distributed under the License is distributed on an "AS IS" BASIS,
- * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
- * See the License for the specific language governing permissions and
- * limitations under the License.
- */
 class ScrollInBehavior<V : View>(context: Context, attrs: AttributeSet) : Behavior<V>(context, attrs) {
     var peekHeight: Int = 300
     var anchorPointY: Int = 600
@@ -37,15 +22,15 @@ class ScrollInBehavior<V : View>(context: Context, attrs: AttributeSet) : Behavi
     lateinit var title: String
 
     init {
-        attrs.apply {
-            val googleMapLikeBehaviorParam = context.obtainStyledAttributes(this, GoogleMapLikeBehaviorParam)
-            peekHeight = googleMapLikeBehaviorParam.getDimensionPixelSize(GoogleMapLikeBehaviorParam_peekHeight, 0)
-            anchorTopMargin = googleMapLikeBehaviorParam.getDimensionPixelSize(GoogleMapLikeBehaviorParam_anchorPoint, 0)
-            googleMapLikeBehaviorParam.recycle()
+        (context.obtainStyledAttributes(attrs, GoogleMapLikeBehaviorParam)).apply {
+            peekHeight = getDimensionPixelSize(GoogleMapLikeBehaviorParam_peekHeight, 0)
+            anchorTopMargin = getDimensionPixelSize(GoogleMapLikeBehaviorParam_anchorPoint, 0)
+            recycle()
+        }
 
-            val scrollInBehaviorParam = context.obtainStyledAttributes(this, ScrollInBehaviorParam)
-            title = scrollInBehaviorParam.getString(ScrollInBehaviorParam_toolbarTitle)!!
-            scrollInBehaviorParam.recycle()
+        (context.obtainStyledAttributes(attrs, ScrollInBehaviorParam)).apply {
+            title = getString(ScrollInBehaviorParam_toolbarTitle)!!
+            recycle()
         }
     }
 
@@ -64,6 +49,7 @@ class ScrollInBehavior<V : View>(context: Context, attrs: AttributeSet) : Behavi
     override fun onDependentViewChanged(parent: CoordinatorLayout, child: V, dependency: View): Boolean {
         super.onDependentViewChanged(parent, child, dependency)
         val rate = (dependency.y - anchorTopMargin) / (parent.height - anchorTopMargin - peekHeight)
+
         currentChildY = with(child) { -((height + paddingTop + paddingBottom + top + bottom) * (rate)) }
         if (currentChildY <= 0) {
             child.y = currentChildY + statusHeight

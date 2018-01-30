@@ -50,13 +50,11 @@ class FollowBehavior<V : View>(context: Context, attrs: AttributeSet?) : Behavio
     override fun onDependentViewChanged(parent: CoordinatorLayout, child: V, dependency: View): Boolean {
         super.onDependentViewChanged(parent, child, dependency)
         val rate = (parent.height - dependency.y - peekHeight) / (anchorPointY - peekHeight)
-        currentChildY = ((parent.height + child.height) * (1f - rate)).toInt()
-        if (currentChildY <= 0) {
-            child.y = 0F
-            currentChildY = 0
-        } else {
-            child.y = currentChildY.toFloat()
+        currentChildY = ((parent.height + child.height) * (1f - rate)).let {
+            if (it <= 0) 0 else it.toInt()
         }
+
+        child.y = currentChildY.toFloat()
         return true
     }
 

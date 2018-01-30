@@ -20,13 +20,13 @@ apply plugin: 'kotlin-kapt'
 apply from: rootProject.file('gradle/generated-kotlin-sources.gradle')
 
 android {
-    compileSdkVersion 27
+    compileSdkVersion 26
     buildToolsVersion '26.0.2'
 
     defaultConfig {
         applicationId "com.acv.airmad"
         minSdkVersion 19
-        targetSdkVersion 27
+        targetSdkVersion 26
         versionCode 1
         versionName "1.0"
         testInstrumentationRunner "android.support.test.runner.AndroidJUnitRunner"
@@ -80,7 +80,7 @@ dependencies {
     implementation "com.squareup.retrofit2:retrofit:2.3.0"
     implementation "com.squareup.retrofit2:converter-gson:2.3.0"
     implementation "com.squareup.okhttp3:logging-interceptor:3.8.1"
-    implementation "com.google.android.gms:play-services-maps:11.6.0"
+    implementation "com.google.android.gms:play-services-maps:11.8.0"
 
     testImplementation 'junit:junit:4.12'
 
